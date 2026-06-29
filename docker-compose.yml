@@ -1,0 +1,66 @@
+# docker-compose.yml
+# -----------------------------------------------------------------------------
+# One command to run the whole stack:  docker compose up --build
+#
+#   mongo   : MongoDB (durable document/op/presence storage)
+#   redis   : Redis (Socket.IO pub/sub for cross-instance scaling)
+#   server  : Node/Express/Socket.IO backend (the CRDT sync engine)
+#   client  : React SPA served by Nginx, which proxies /api + /socket.io
+#
+# Open http://localhost:8080 after it boots.
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build: ./server
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGO_URI: mongodb://mongo:27017/rt_collab
+      REDIS_URL: redis://redis:6379
+      # Browser loads from the client container's origin; allow it for CORS.
+      CLIENT_ORIGIN: http://localhost:8080
+      # CHANGE THIS in any real deployment.
+      JWT_SECRET: ${JWT_SECRET:-please-change-this-in-production}
+      JWT_EXPIRES_IN: 7d
+      LOG_LEVEL: info
+    # Exposed for direct debugging / scaling behind an external LB. The client
+    # talks to the backend through Nginx, not this port.
+    ports:
+      - '5000:5000'
+
+  client:
+    build: ./client
+    restart: unless-stopped
+    depends_on:
+      - server
+    ports:
+      - '8080:80'
+
+volumes:
+  mongo-data:

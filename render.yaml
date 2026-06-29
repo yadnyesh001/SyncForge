@@ -1,0 +1,45 @@
+# render.yaml — Render Blueprint for SyncForge (backend + frontend).
+# Deploy via Render dashboard: New → Blueprint → pick this repo.
+# You'll be prompted to fill the values marked `sync: false`.
+
+services:
+  # ---- Backend: Node/Express/Socket.IO API ----
+  - type: web
+    name: syncforge-server
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DISABLE_REDIS
+        value: "1"
+      # Render auto-generates a strong secret for you.
+      - key: JWT_SECRET
+        generateValue: true
+      # Fill these in the dashboard when prompted:
+      - key: MONGO_URI
+        sync: false      # your mongodb+srv://...rt_collab?... string
+      - key: CLIENT_ORIGIN
+        sync: false      # the frontend URL, e.g. https://syncforge-client.onrender.com
+
+  # ---- Frontend: React SPA (static) ----
+  - type: web
+    name: syncforge-client
+    runtime: static
+    rootDir: client
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false      # https://syncforge-server.onrender.com/api
+      - key: VITE_SOCKET_URL
+        sync: false      # https://syncforge-server.onrender.com
+    routes:
+      # SPA fallback so client-side routes (e.g. /documents/:id) work on refresh.
+      - type: rewrite
+        source: /*
+        destination: /index.html

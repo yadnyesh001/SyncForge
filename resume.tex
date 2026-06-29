@@ -1,0 +1,281 @@
+\documentclass[letterpaper,11pt]{article}
+
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\usepackage{graphicx}
+\setlength{\multicolsep}{-3.0pt}
+\setlength{\columnsep}{-1pt}
+\input{glyphtounicode}
+
+
+\RequirePackage{tikz}
+\RequirePackage{xcolor}
+\RequirePackage{fontawesome}
+\usepackage{tikz}
+\usetikzlibrary{svg.path}
+
+
+
+
+\definecolor{cvblue}{HTML}{0E5484}
+\definecolor{black}{HTML}{130810}
+\definecolor{darkcolor}{HTML}{0F4539}
+\definecolor{cvgreen}{HTML}{3BD80D}
+\definecolor{taggreen}{HTML}{00E278}
+\definecolor{SlateGrey}{HTML}{2E2E2E}
+\definecolor{LightGrey}{HTML}{666666}
+\colorlet{name}{black}
+\colorlet{tagline}{darkcolor}
+\colorlet{heading}{darkcolor}
+\colorlet{headingrule}{cvblue}
+\colorlet{accent}{darkcolor}
+\colorlet{emphasis}{SlateGrey}
+\colorlet{body}{LightGrey}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.19in}
+\addtolength{\topmargin}{-.7in}
+\addtolength{\textheight}{1.4in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\classesList}[4]{
+    \item\small{
+        {#1 #2 #3 #4 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{\large#1} & \textbf{\small #2} \\
+      \textit{\large#3} & \textit{\small #4} \\
+
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+
+
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{1.001\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & \textbf{\small #2}\\
+    \end{tabular*}\vspace{-7pt}
+}
+
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+
+
+
+\newcommand\sbullet[1][.5]{\mathbin{\vcenter{\hbox{\scalebox{#1}{$\bullet$}}}}}
+
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\begin{document}
+
+
+%----------HEADING----------
+
+
+
+
+% In resume header
+\begin{center} {\Huge \bfseries \scshape Yadnyesh Badgujar} \\ \vspace{4pt} Pune, Maharashtra \\ \vspace{5pt} \small \href{tel:+919699909117}{\raisebox{-0.1\height}\faPhone\ \underline{+91-9699909117}} \hspace{4pt} \href{mailto:yadnyeshavinash.b22@iiits.in}{\raisebox{-0.2\height}\faEnvelope\ \underline{yadnyeshavinash.b22@iiits.in}} \hspace{5pt} \href{https://www.linkedin.com/in/yadnyeshbadgujar/}{\raisebox{-0.2\height}\faLinkedinSquare\ \underline{LinkedIn}} \hspace{5pt} \href{https://github.com/yadnyesh001}{\raisebox{-0.2\height}\faGithub\ \underline{GitHub}} \hspace{5pt} \href{https://leetcode.com/u/yadnyeshab01/}{\raisebox{-0.2\height}{\includegraphics[height=0.3cm]{leetcode.png}}\ \underline{LeetCode}} \hspace{5pt} \href{https://yadnyeshbadgujar.vercel.app/}{\raisebox{-0.2\height}\faGlobe\ \underline{Portfolio}} \\ \vspace{5pt} \end{center}
+
+\vspace{-0.70cm}
+
+%-----------EDUCATION-----------
+\section{\textbf{\sffamily EDUCATION}}
+\vspace{4pt}
+\resumeSubHeadingListStart
+  \resumeSubheading
+    {\textbf{\sffamily Indian Institute of Information Technology (IIIT), Sri City}}{2026}
+    {\sffamily B.Tech - Computer Science and Engineering}{\sffamily Sri City, Andhra Pradesh}
+\resumeSubHeadingListEnd
+
+\vspace{-0.35cm}
+
+%-----------EXPERIENCE-----------
+\section{\textbf{\sffamily EXPERIENCE}}
+\vspace{3pt}
+\resumeSubHeadingListStart
+  \resumeSubheading
+    {\underline{\textbf{\sffamily TechTok4U}} $|$ \sffamily SDE Intern (MERN Stack Developer)}{2025}
+    {}{}
+    \resumeItemListStart
+      \setlength{\itemsep}{4pt}
+      \vspace{-0.35cm}
+      \resumeItem{\sffamily \normalsize{\textbf{Simplified} school operations via \textbf{Instil}, building \textbf{10+} features for students, teachers, and admins.}}
+      \resumeItem{\sffamily \normalsize{\textbf{Accelerated} academic data access by \textbf{$\sim$40\%} via \textbf{15+} indexed REST APIs for attendance, grades, and reports.}}
+      \resumeItem{\sffamily \normalsize{\textbf{Improved} team velocity by merging \textbf{50+} reviewed PRs in a \textbf{3-member} Agile team via \textbf{Git/GitHub} workflows.}}
+    \resumeItemListEnd
+
+\vspace{0.15cm}
+
+ \resumeSubheading
+{\underline{\textbf{\sffamily Bosch Limited}} $|$ \sffamily Project Trainee}{2024}
+{}{}
+
+    \resumeItemListStart
+      \setlength{\itemsep}{4pt}
+      \vspace{-0.55cm}
+      \resumeItem{\sffamily \normalsize{\textbf{Eliminated} manual Excel with a full-stack intern platform and \textbf{3 role-based} dashboards, saving \textbf{$\sim$10 hrs/week}.}}
+      \resumeItem{\sffamily \normalsize{\textbf{Cut} data retrieval time by \textbf{$\sim$35\%} with \textbf{12} REST APIs in Node.js/Express and indexed MongoDB.}}
+      \resumeItem{\sffamily \normalsize{\textbf{Secured} \textbf{3 role-based} access tiers via JWT auth, blocking unauthorized actions and automating \textbf{100\%} of emails.}}
+    \resumeItemListEnd
+
+\vspace{-0.40cm}
+
+
+%-----------PROJECTS-----------
+\section{\textbf{\sffamily PROJECTS}}
+\resumeSubHeadingListStart
+\setlength{\itemsep}{0pt} % Reduce space between list items
+\setlength{\parskip}{5pt} % Reduce paragraph spacing
+\setlength{\parsep}{5pt} % Reduce parsing spacing
+
+\vspace{-0.15cm}
+
+\resumeProjectHeading
+{\href{https://github.com/yadnyesh001/gitlab-chatbot}{\textbf{\sffamily
+ \large{\underline{GitLab Handbook Chatbot}}} \raisebox{-0.1\height}\faExternalLink} $|$
+ \href{https://gitlab-chatbot-iota.vercel.app}{\textbf{\sffamily
+ \large{\underline{Live Demo}}}} $|$ \sffamily
+ \large{\underline{FastAPI, React, Gemini, Supabase, Tailwind CSS}}}{2026}
+\vspace{-0.2cm}
+\resumeItemListStart \setlength{\itemsep}{6pt} \resumeItem{\sffamily \normalsize{\textbf{Solved} LLM hallucination with a RAG pipeline grounding answers in \textbf{500+} Handbook pages with citations.}} \vspace{0.02cm} \resumeItem{\sffamily \normalsize{\textbf{Boosted} relevance via \textbf{top-5} cosine-similarity chunks on a Supabase pgvector \textbf{HNSW} index in \textbf{under 100ms}.}} \vspace{-0.40cm} \resumeItem{\sffamily \normalsize{\textbf{Made} the entire Handbook searchable by converting it into \textbf{10,364} chunks, each a \textbf{1024-dim} Cohere vector.}} \resumeSubHeadingListEnd
+
+
+\vspace{-0.35cm}
+
+
+\resumeProjectHeading {\href{https://github.com/yadnyesh001/MealMonkey}{\textbf{\sffamily \large{\underline{MealMonkey}}} \raisebox{-0.1\height}\faExternalLink} $|$ \href{https://mealmonkey-food.vercel.app/}{\textbf{\sffamily \large{\underline{Live Demo}}}} $|$ \sffamily \large{\underline{MongoDB, Express.js, React, Node.js, JWT, Swagger, Jest}}}{2025}\ \vspace{-0.15cm}
+\resumeItemListStart \setlength{\itemsep}{6pt}
+
+\resumeItem{\sffamily \normalsize{\textbf{Connected} customers, restaurants, and riders, fixing fragmented ordering across \textbf{5 role-based} flows.}}
+\vspace{0.01cm}
+
+\resumeItem{\sffamily \normalsize{\textbf{Sped up} API testing and integration with clear Swagger docs, JWT-based login security, and \textbf{9 MongoDB} schemas.}}
+
+\vspace{0.01cm}
+
+\resumeItem{\sffamily \normalsize{\textbf{Boosted} usability with a responsive React frontend of \textbf{20+ screens} and role-based protected routes.}}
+\resumeSubHeadingListEnd
+
+
+\vspace{-0.3cm}
+
+
+%-----------TECHNICAL SKILLS-----------
+\section{\textbf{\sffamily TECHNICAL SKILLS}}
+\begin{itemize}[leftmargin=0.15in, label={}]
+  \small{\item{
+    \textbf{\sffamily Programming Languages:} \sffamily \normalsize Java, JavaScript, Python  \\[0.1em]
+
+    \textbf{\sffamily Web Technologies:} \sffamily HTML, CSS, React.js, Node.js, Express.js, FastAPI\\[0.1em]
+
+    \textbf{\sffamily Databases:} \sffamily MySQL, MongoDB, Supabase, Vector Databases \\[0.1em]
+
+    \textbf{\sffamily DevOps \& Tools:} \sffamily Git, GitHub, Postman \\[0.1em]
+
+    \textbf{\sffamily Core CS Concepts:} \sffamily OOP, Data Structures, Algorithms, SDLC \\[0.1em]
+
+    \textbf{\sffamily AI \& GenAI:} \sffamily RAG, Vector Databases, Embeddings, Prompt Engineering, Gemini API \\[0.1em]
+
+    \textbf{\sffamily AI Tools:} \sffamily GitHub Copilot, Claude Code, ChatGPT \\
+  }}
+\end{itemize}
+\vspace{-10pt}
+
+
+
+
+% -------------Achievements----------------------
+\section{\textbf{\sffamily ACHIEVEMENTS \& CERTIFICATES}}
+\resumeItemListStart
+\setlength{\itemsep}{1pt}
+    \resumeItem{\sffamily \normalsize{Solved \textbf{900+ Data Structures and Algorithms problems} across \textbf{LeetCode} and \textbf{GeeksforGeeks}.    }}
+\vspace{0.12cm}
+    \resumeItem{\sffamily \normalsize{Achieved peak ratings of \textbf{1839} on LeetCode and \textbf{1757} on GeeksforGeeks through coding challenge performance.}}
+\vspace{0.12cm}
+    \resumeItem{\sffamily \normalsize{Ranked in the \textbf{top 7\% globally}, showcasing strong proficiency under competitive constraints.}}
+\resumeItemListEnd
+
+
+\vspace{-0.15cm}
+
+\section{\textbf{\sffamily EXTRACURRICULAR \& LEADERSHIP SKILLS}}
+\resumeSubHeadingListStart
+
+    \resumeItemListStart
+    \vspace{0.1cm}
+        \resumeItem{\sffamily \normalsize{Secured \textbf{2nd Position} in All India Inter IIIT Football Tournament, demonstrating teamwork and competitive spirit.}}
+\vspace{-0.25cm}
+\resumeItem{\sffamily \normalsize{\textbf{Transportation Co-Lead}, Abhisarga IIITS Fest — Coordinated travel logistics for \textbf{200+ participants}.}}
+
+    \resumeItemListEnd
+\resumeSubHeadingListEnd
+\vspace{-10pt}
+
+
+
+\end{document}
