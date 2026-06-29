@@ -1,12 +1,5 @@
 /**
- * pages/Editor.jsx
- * -----------------------------------------------------------------------------
- * The live collaborative editor. Pulls everything together:
- *   - useCollaborativeDocument: CRDT replica + socket sync + presence + offline.
- *   - A <textarea> whose changes become CRDT operations (via the diff util).
- *   - Title rename with debounced auto-save.
- *   - Presence bar, history panel, share modal, live stats.
- *   - Keyboard shortcuts (Ctrl/Cmd+S = save hint, Ctrl/Cmd+H = history).
+ * pages/Editor.jsx — the live collaborative editor.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -36,7 +29,6 @@ export default function Editor() {
   const { ready, text, version, status, users, cursors, typing, onChange, onCursor } =
     useCollaborativeDocument(id, textareaRef);
 
-  // Load metadata (title, collaborators, ownership) once.
   useEffect(() => {
     documentsApi
       .get(id)
@@ -49,7 +41,6 @@ export default function Editor() {
 
   const isOwner = doc && String(doc.owner?._id || doc.owner) === String(user?._id || user?.id);
 
-  // Debounced title auto-save (rename).
   const onTitleChange = (value) => {
     setTitle(value);
     setSaveState('saving');
@@ -64,22 +55,19 @@ export default function Editor() {
     }, 600);
   };
 
-  // Textarea change -> CRDT ops.
   const handleInput = (e) => {
     setSaveState('saving');
     onChange(e.target.value, e.target.selectionStart);
-    // Content is persisted server-side on every op; reflect "saved" shortly after.
     clearTimeout(titleTimer.current);
     setTimeout(() => setSaveState('saved'), 400);
   };
 
   const handleCursor = (e) => onCursor(e.target.selectionStart);
 
-  // Keyboard shortcuts.
   const onKeyDown = useCallback((e) => {
     const mod = e.ctrlKey || e.metaKey;
     if (mod && e.key.toLowerCase() === 's') {
-      e.preventDefault(); // auto-save already handles persistence
+      e.preventDefault();
     } else if (mod && e.key.toLowerCase() === 'h') {
       e.preventDefault();
       setShowHistory((v) => !v);
@@ -88,67 +76,96 @@ export default function Editor() {
 
   if (error) {
     return (
-      <Shell>
-        <p className="mt-6 text-red-600">{error}</p>
-      </Shell>
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+        <Navbar />
+        <main className="mx-auto max-w-3xl px-4 py-12">
+          <Link to="/" className="text-sm text-brand-600 hover:underline">← Back to documents</Link>
+          <div className="card mt-6 p-8 text-center">
+            <div className="mb-3 text-4xl">😕</div>
+            <p className="font-medium text-red-600">{error}</p>
+          </div>
+        </main>
+      </div>
     );
   }
 
   const words = text.trim() ? text.trim().split(/\s+/).length : 0;
 
   return (
-    <div className="flex h-screen flex-col bg-slate-50 dark:bg-slate-950">
+    <div className="flex h-screen flex-col bg-slate-100 dark:bg-slate-950">
       <Navbar />
       <div className="flex min-h-0 flex-1">
         <main className="flex min-w-0 flex-1 flex-col">
           {/* Toolbar */}
-          <div className="flex flex-wrap items-center gap-3 border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
-            <Link to="/" className="text-sm text-indigo-600 hover:underline">←</Link>
+          <div className="flex flex-wrap items-center gap-2 border-b border-slate-200/80 bg-white/80 px-4 py-2.5 backdrop-blur dark:border-slate-800/80 dark:bg-slate-900/80">
+            <Link
+              to="/"
+              className="grid h-9 w-9 place-items-center rounded-xl text-slate-500 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
+              title="Back to documents"
+            >
+              ←
+            </Link>
             <input
               value={title}
               onChange={(e) => onTitleChange(e.target.value)}
-              className="min-w-0 flex-1 rounded-md bg-transparent px-2 py-1 text-lg font-semibold text-slate-800 outline-none focus:bg-slate-100 dark:text-slate-100 dark:focus:bg-slate-800"
+              placeholder="Untitled"
+              className="min-w-0 flex-1 rounded-lg bg-transparent px-2 py-1 text-lg font-semibold text-slate-800 outline-none transition-colors hover:bg-slate-100 focus:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-800 dark:focus:bg-slate-800"
             />
-            <span className="text-xs text-slate-400">{saveState === 'saving' ? 'Saving…' : 'Saved'}</span>
-            <button onClick={() => setShowShare(true)} className="rounded-md border border-slate-200 px-3 py-1 text-sm hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
-              Share
+            <span className="flex items-center gap-1.5 text-xs text-slate-400">
+              {saveState === 'saving' ? (
+                <><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400" /> Saving…</>
+              ) : (
+                <><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Saved</>
+              )}
+            </span>
+            <button onClick={() => setShowShare(true)} className="btn-ghost px-3 py-1.5 text-sm">
+              ↗ Share
             </button>
-            <button onClick={() => setShowHistory((v) => !v)} className="rounded-md border border-slate-200 px-3 py-1 text-sm hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
-              History
+            <button
+              onClick={() => setShowHistory((v) => !v)}
+              className={`btn-ghost px-3 py-1.5 text-sm ${showHistory ? 'ring-2 ring-brand-500/30' : ''}`}
+            >
+              🕘 History
             </button>
           </div>
 
           {/* Presence */}
-          <div className="border-b border-slate-200 bg-white px-4 py-2 dark:border-slate-800 dark:bg-slate-900">
+          <div className="border-b border-slate-200/80 bg-white/60 px-4 py-2 backdrop-blur dark:border-slate-800/80 dark:bg-slate-900/60">
             <PresenceBar users={users} cursors={cursors} typing={typing} status={status} />
           </div>
 
-          {/* Editor surface */}
-          <div className="min-h-0 flex-1 overflow-auto p-4">
+          {/* Writing surface */}
+          <div className="min-h-0 flex-1 overflow-auto px-4 py-8">
             {!ready ? (
               <Spinner label="Joining document…" />
             ) : (
-              <textarea
-                ref={textareaRef}
-                value={text}
-                onChange={handleInput}
-                onKeyUp={handleCursor}
-                onClick={handleCursor}
-                onKeyDown={onKeyDown}
-                spellCheck={false}
-                placeholder="Start typing… your edits sync in real time."
-                className="mx-auto block h-full min-h-[60vh] w-full max-w-3xl resize-none rounded-xl border border-slate-200 bg-white p-6 font-mono text-[15px] leading-7 text-slate-800 shadow-sm outline-none focus:border-indigo-300 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
-              />
+              <div className="mx-auto max-w-3xl animate-fade-in">
+                <div className="card overflow-hidden">
+                  <textarea
+                    ref={textareaRef}
+                    value={text}
+                    onChange={handleInput}
+                    onKeyUp={handleCursor}
+                    onClick={handleCursor}
+                    onKeyDown={onKeyDown}
+                    spellCheck={false}
+                    placeholder="Start typing… your edits sync in real time."
+                    className="block h-full min-h-[62vh] w-full resize-none bg-transparent p-8 sm:p-12 font-mono text-[15px] leading-8 text-slate-800 outline-none placeholder:text-slate-400 dark:text-slate-100"
+                  />
+                </div>
+              </div>
             )}
           </div>
 
           {/* Stats bar */}
-          <div className="flex items-center gap-4 border-t border-slate-200 bg-white px-4 py-2 text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
-            <span>{text.length} chars</span>
-            <span>{words} words</span>
-            <span>version {version}</span>
-            <span>{users.length + 1} editing</span>
-            <span className="ml-auto opacity-70">Ctrl/⌘+H history · Ctrl/⌘+S save</span>
+          <div className="flex items-center gap-4 border-t border-slate-200/80 bg-white/80 px-4 py-2 text-xs text-slate-500 backdrop-blur dark:border-slate-800/80 dark:bg-slate-900/80 dark:text-slate-400">
+            <Stat icon="✍️" value={`${text.length} chars`} />
+            <Stat icon="📝" value={`${words} words`} />
+            <Stat icon="⚙️" value={`v${version}`} />
+            <Stat icon="👥" value={`${users.length + 1} editing`} />
+            <span className="ml-auto hidden opacity-60 sm:inline">
+              ⌘/Ctrl + H history · ⌘/Ctrl + S save
+            </span>
           </div>
         </main>
 
@@ -169,14 +186,11 @@ export default function Editor() {
   );
 }
 
-function Shell({ children }) {
+function Stat({ icon, value }) {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <Navbar />
-      <main className="mx-auto max-w-4xl px-4 py-8">
-        <Link to="/" className="text-sm text-indigo-600 hover:underline">← Back to documents</Link>
-        {children}
-      </main>
-    </div>
+    <span className="flex items-center gap-1">
+      <span className="opacity-70">{icon}</span>
+      {value}
+    </span>
   );
 }

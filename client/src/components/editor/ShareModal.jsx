@@ -1,17 +1,12 @@
 /**
- * components/editor/ShareModal.jsx
- * -----------------------------------------------------------------------------
- * Share a document: copy the invite link and (owner only) manage collaborators
- * by email. PUT /documents/:id replaces the collaborator list.
+ * components/editor/ShareModal.jsx — copy invite link + manage collaborators.
  */
 
 import { useState } from 'react';
 import documentsApi from '../../services/documents.service';
 
 export default function ShareModal({ doc, isOwner, onClose, onUpdated }) {
-  const [emails, setEmails] = useState(
-    (doc.collaborators || []).map((c) => c.email).join(', ')
-  );
+  const [emails, setEmails] = useState((doc.collaborators || []).map((c) => c.email).join(', '));
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -44,27 +39,35 @@ export default function ShareModal({ doc, isOwner, onClose, onUpdated }) {
   };
 
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-30 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm animate-fade-in"
+      onClick={onClose}
+    >
       <div
-        className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
+        className="card w-full max-w-md p-6 animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">Share document</h2>
+        <div className="mb-5 flex items-center gap-3">
+          <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-violet-600 text-lg text-white">
+            ↗
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Share document</h2>
+            <p className="text-xs text-slate-400">Anyone you add can edit in real time.</p>
+          </div>
+        </div>
 
-        <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Invite link</label>
-        <div className="mb-4 flex gap-2">
-          <input
-            readOnly
-            value={inviteLink}
-            className="flex-1 truncate rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-          />
-          <button onClick={copy} className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white hover:bg-indigo-700">
-            {copied ? 'Copied!' : 'Copy'}
+        <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Invite link</label>
+        <div className="mb-5 flex gap-2">
+          <input readOnly value={inviteLink} className="input flex-1 truncate bg-slate-50 dark:bg-slate-800" />
+          <button onClick={copy} className={copied ? 'btn-ghost' : 'btn-primary'}>
+            {copied ? '✓ Copied' : 'Copy'}
           </button>
         </div>
 
-        <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-          Collaborators (emails, comma-separated)
+        <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+          Collaborators
+          <span className="ml-1 font-normal text-slate-400">(emails, comma-separated)</span>
         </label>
         <textarea
           value={emails}
@@ -72,16 +75,14 @@ export default function ShareModal({ doc, isOwner, onClose, onUpdated }) {
           disabled={!isOwner}
           rows={2}
           placeholder={isOwner ? 'alice@example.com, bob@example.com' : 'Only the owner can edit sharing'}
-          className="mb-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-indigo-500 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+          className="input mb-2 resize-none disabled:opacity-60"
         />
         {error && <p className="mb-2 text-sm text-red-600">{error}</p>}
 
-        <div className="mt-2 flex justify-end gap-2">
-          <button onClick={onClose} className="rounded-lg px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
-            Close
-          </button>
+        <div className="mt-4 flex justify-end gap-2">
+          <button onClick={onClose} className="btn-ghost px-4 py-2 text-sm">Close</button>
           {isOwner && (
-            <button onClick={save} disabled={busy} className="rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 disabled:opacity-60">
+            <button onClick={save} disabled={busy} className="btn-primary px-4 py-2 text-sm">
               {busy ? 'Saving…' : 'Save'}
             </button>
           )}
