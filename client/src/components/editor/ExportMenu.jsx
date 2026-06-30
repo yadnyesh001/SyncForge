@@ -36,7 +36,7 @@ export default function ExportMenu({ title, text }) {
         <span className="hidden sm:inline">⬇ Export</span>
       </button>
       {open && (
-        <div className="absolute right-0 z-30 mt-1 w-44 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lift animate-scale-in dark:border-slate-700 dark:bg-slate-800">
+        <div className="absolute right-0 z-50 mt-1 w-44 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lift animate-scale-in dark:border-slate-700 dark:bg-slate-800">
           <button
             onClick={doMarkdown}
             className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"

@@ -145,8 +145,8 @@ export default function Editor() {
       <Navbar />
       <div className="flex min-h-0 flex-1">
         <main className="flex min-w-0 flex-1 flex-col">
-          {/* Toolbar */}
-          <div className="flex flex-wrap items-center gap-2 border-b border-slate-200/80 bg-white/80 px-3 py-2.5 backdrop-blur dark:border-slate-800/80 dark:bg-slate-900/80 sm:px-4">
+          {/* Toolbar — relative z-30 so dropdowns overflow ABOVE the bars below. */}
+          <div className="relative z-30 flex flex-wrap items-center gap-2 border-b border-slate-200/80 bg-white/80 px-3 py-2.5 backdrop-blur dark:border-slate-800/80 dark:bg-slate-900/80 sm:px-4">
             <Link
               to="/dashboard"
               className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-slate-500 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
