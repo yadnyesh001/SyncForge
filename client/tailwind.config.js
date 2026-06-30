@@ -2,6 +2,8 @@
  * tailwind.config.js
  * darkMode 'class' so the ThemeContext toggles dark mode via the `dark` class.
  */
+import typography from '@tailwindcss/typography';
+
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
   darkMode: 'class',
@@ -50,5 +52,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [typography],
 };

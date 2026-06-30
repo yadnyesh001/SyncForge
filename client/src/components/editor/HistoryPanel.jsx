@@ -43,7 +43,10 @@ export default function HistoryPanel({ documentId, currentVersion, onClose }) {
   };
 
   return (
-    <aside className="flex h-full w-80 flex-col border-l border-slate-200 bg-white animate-slide-up dark:border-slate-800 dark:bg-slate-900">
+    <>
+      {/* Mobile backdrop */}
+      <div className="fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-sm lg:hidden" onClick={onClose} />
+      <aside className="fixed inset-y-0 right-0 z-40 flex h-full w-80 max-w-[85vw] flex-col border-l border-slate-200 bg-white animate-slide-up dark:border-slate-800 dark:bg-slate-900 lg:static lg:z-auto lg:max-w-none">
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-800">
         <div>
           <h2 className="font-semibold text-slate-800 dark:text-slate-100">History</h2>
@@ -103,6 +106,7 @@ export default function HistoryPanel({ documentId, currentVersion, onClose }) {
           </ul>
         )}
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }
