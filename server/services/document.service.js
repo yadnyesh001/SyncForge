@@ -39,9 +39,16 @@ const isOwner = (doc, userId) => String(doc.owner._id || doc.owner) === String(u
 const isCollaborator = (doc, userId) =>
   (doc.collaborators || []).some((c) => String(c._id || c) === String(userId));
 const canView = (doc, userId) => isOwner(doc, userId) || isCollaborator(doc, userId);
+// Read access: owner/collaborator OR a public (read-only) document.
+const canViewOrPublic = (doc, userId) => canView(doc, userId) || !!doc.isPublic;
 
 function assertView(doc, userId) {
   if (!canView(doc, userId)) throw ApiError.forbidden('You do not have access to this document');
+}
+function assertViewable(doc, userId) {
+  if (!canViewOrPublic(doc, userId)) {
+    throw ApiError.forbidden('You do not have access to this document');
+  }
 }
 function assertEdit(doc, userId) {
   // In this app, anyone who can view can edit (collaborators are editors).
@@ -60,7 +67,7 @@ async function loadOrThrow(documentId) {
 /** Load a document and assert the user may view it. Used by the presence layer. */
 async function ensureAccess(userId, documentId) {
   const doc = await loadOrThrow(documentId);
-  assertView(doc, userId);
+  assertViewable(doc, userId);
   return doc;
 }
 
@@ -97,7 +104,7 @@ async function getDocument(userId, documentId) {
     .populate('owner', 'name email')
     .populate('collaborators', 'name email');
   if (!doc) throw ApiError.notFound('Document not found');
-  assertView(doc, userId);
+  assertViewable(doc, userId);
   return doc;
 }
 
@@ -105,12 +112,17 @@ async function getDocument(userId, documentId) {
  * Update metadata. Rename is allowed for any editor; changing collaborators
  * (sharing) is owner-only. `collaborators` is an array of emails (PUT replaces).
  */
-async function updateDocument(userId, documentId, { title, collaborators } = {}) {
+async function updateDocument(userId, documentId, { title, collaborators, isPublic } = {}) {
   const doc = await loadOrThrow(documentId);
 
   if (title !== undefined) {
     assertEdit(doc, userId);
     doc.title = String(title).trim() || 'Untitled';
+  }
+
+  if (isPublic !== undefined) {
+    assertOwner(doc, userId);
+    doc.isPublic = !!isPublic;
   }
 
   if (collaborators !== undefined) {
@@ -202,7 +214,7 @@ async function applyOperations(userId, documentId, ops) {
  */
 async function getSocketState(userId, documentId) {
   const doc = await loadOrThrow(documentId);
-  assertView(doc, userId);
+  assertViewable(doc, userId);
   return {
     documentId: String(doc._id),
     title: doc.title,
@@ -219,7 +231,7 @@ async function getSocketState(userId, documentId) {
  */
 async function getOperationsSince(userId, documentId, sinceVersion = 0) {
   const doc = await loadOrThrow(documentId);
-  assertView(doc, userId);
+  assertViewable(doc, userId);
   const rows = await Operation.find({ documentId, version: { $gt: Number(sinceVersion) || 0 } })
     .sort({ version: 1 })
     .limit(5000);
@@ -231,7 +243,7 @@ async function getOperationsSince(userId, documentId, sinceVersion = 0) {
 /** The operation log for a document (for the history panel / timeline). */
 async function getHistory(userId, documentId, { limit = 200, order = 'asc' } = {}) {
   const doc = await loadOrThrow(documentId);
-  assertView(doc, userId);
+  assertViewable(doc, userId);
   return Operation.find({ documentId })
     .sort({ version: order === 'desc' ? -1 : 1 })
     .limit(Math.min(Number(limit) || 200, 1000))

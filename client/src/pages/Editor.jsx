@@ -11,6 +11,7 @@ import HistoryPanel from '../components/editor/HistoryPanel';
 import ShareModal from '../components/editor/ShareModal';
 import RemoteCursors from '../components/editor/RemoteCursors';
 import MarkdownPreview from '../components/editor/MarkdownPreview';
+import ExportMenu from '../components/editor/ExportMenu';
 import { useAuth } from '../context/AuthContext';
 import documentsApi from '../services/documents.service';
 import { useCollaborativeDocument } from '../hooks/useCollaborativeDocument';
@@ -55,7 +56,12 @@ export default function Editor() {
     }
   }, [text, ready, viewMode]);
 
-  const isOwner = doc && String(doc.owner?._id || doc.owner) === String(user?._id || user?.id);
+  const myId = String(user?._id || user?.id);
+  const isOwner = doc && String(doc.owner?._id || doc.owner) === myId;
+  const isCollaborator = doc && (doc.collaborators || []).some((c) => String(c._id || c) === myId);
+  // If the doc loaded but the user is neither owner nor collaborator, they got in
+  // via the public link — read-only.
+  const readOnly = doc && !isOwner && !isCollaborator;
 
   const onTitleChange = (value) => {
     setTitle(value);
@@ -120,6 +126,7 @@ export default function Editor() {
         onClick={handleCursor}
         onKeyDown={onKeyDown}
         spellCheck={false}
+        readOnly={readOnly}
         placeholder="Start typing… Markdown supported. Your edits sync in real time."
         className={`relative block w-full resize-none overflow-hidden bg-transparent text-slate-800 outline-none placeholder:text-slate-400 dark:text-slate-100 ${SURFACE}`}
       />
@@ -171,13 +178,20 @@ export default function Editor() {
               ))}
             </div>
 
-            <span className="hidden items-center gap-1.5 text-xs text-slate-400 sm:flex">
-              {saveState === 'saving' ? (
-                <><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400" /> Saving…</>
-              ) : (
-                <><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Saved</>
-              )}
-            </span>
+            {readOnly ? (
+              <span className="flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700 dark:bg-amber-500/15 dark:text-amber-300">
+                🔒 Read-only
+              </span>
+            ) : (
+              <span className="hidden items-center gap-1.5 text-xs text-slate-400 sm:flex">
+                {saveState === 'saving' ? (
+                  <><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400" /> Saving…</>
+                ) : (
+                  <><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Saved</>
+                )}
+              </span>
+            )}
+            <ExportMenu title={title} text={text} />
             <button onClick={() => setShowShare(true)} className="btn-ghost px-3 py-1.5 text-sm">
               <span className="sm:hidden">↗</span><span className="hidden sm:inline">↗ Share</span>
             </button>

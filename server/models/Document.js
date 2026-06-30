@@ -60,6 +60,10 @@ const documentSchema = new mongoose.Schema(
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     collaborators: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 
+    // When true, any logged-in user with the link can VIEW (read-only). Editing
+    // still requires being the owner or a collaborator.
+    isPublic: { type: Boolean, default: false },
+
     // Rendered plain text — cheap preview/search source of truth.
     currentContent: { type: String, default: '' },
 

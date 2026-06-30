@@ -35,10 +35,11 @@ const get = asyncHandler(async (req, res) => {
 
 // PUT /api/documents/:id   (rename and/or share)
 const update = asyncHandler(async (req, res) => {
-  const { title, collaborators } = req.body;
+  const { title, collaborators, isPublic } = req.body;
   const doc = await documentService.updateDocument(req.user.id, req.params.id, {
     title,
     collaborators,
+    isPublic,
   });
   res.json({ document: doc });
 });
