@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Spinner from '../components/Spinner';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import { useConfirm } from '../context/ConfirmContext';
 import documentsApi from '../services/documents.service';
 
 const CARD_ACCENTS = [
@@ -30,16 +32,17 @@ function relativeTime(date) {
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [docs, setDocs] = useState(null);
   const [query, setQuery] = useState('');
   const [creating, setCreating] = useState(false);
-  const [error, setError] = useState('');
 
   const load = async () => {
     try {
       setDocs(await documentsApi.list());
     } catch (err) {
-      setError(err.response?.data?.error?.message || 'Failed to load documents');
+      toast.error(err.response?.data?.error?.message || 'Failed to load documents');
       setDocs([]);
     }
   };
@@ -60,17 +63,27 @@ export default function Dashboard() {
       const doc = await documentsApi.create('Untitled');
       navigate(`/documents/${doc._id}`);
     } catch (err) {
-      setError(err.response?.data?.error?.message || 'Could not create document');
-    } finally {
+      toast.error(err.response?.data?.error?.message || 'Could not create document');
       setCreating(false);
     }
   };
 
   const removeDoc = async (e, id) => {
     e.stopPropagation();
-    if (!window.confirm('Delete this document? This cannot be undone.')) return;
-    await documentsApi.remove(id);
-    setDocs((d) => d.filter((x) => x._id !== id));
+    const ok = await confirm({
+      title: 'Delete document?',
+      message: 'This permanently deletes the document and its entire history. This cannot be undone.',
+      confirmText: 'Delete',
+      danger: true,
+    });
+    if (!ok) return;
+    try {
+      await documentsApi.remove(id);
+      setDocs((d) => d.filter((x) => x._id !== id));
+      toast.success('Document deleted');
+    } catch (err) {
+      toast.error(err.response?.data?.error?.message || 'Failed to delete');
+    }
   };
 
   const isOwner = (doc) => String(doc.owner?._id || doc.owner) === String(user?._id || user?.id);
@@ -108,8 +121,6 @@ export default function Dashboard() {
             className="input pl-10"
           />
         </div>
-
-        {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
         {docs === null ? (
           <Spinner label="Loading documents…" />

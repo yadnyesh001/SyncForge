@@ -26,7 +26,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/70 backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/70">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <Link to="/" className="group flex items-center gap-2.5">
+        <Link to="/dashboard" className="group flex items-center gap-2.5">
           <span className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-violet-600 text-sm font-bold text-white shadow-soft transition-transform group-hover:scale-105">
             S
           </span>

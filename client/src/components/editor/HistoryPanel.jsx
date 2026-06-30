@@ -4,8 +4,12 @@
 
 import { useEffect, useState } from 'react';
 import documentsApi from '../../services/documents.service';
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
 
 export default function HistoryPanel({ documentId, currentVersion, onClose }) {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [ops, setOps] = useState(null);
   const [busy, setBusy] = useState(false);
 
@@ -20,11 +24,19 @@ export default function HistoryPanel({ documentId, currentVersion, onClose }) {
   }, [documentId, currentVersion]);
 
   const revert = async (version) => {
-    if (!window.confirm(`Restore the document to version ${version}?`)) return;
+    const ok = await confirm({
+      title: `Restore version ${version}?`,
+      message: 'This appends new operations to bring the document back to that state. History is preserved.',
+      confirmText: 'Restore',
+    });
+    if (!ok) return;
     setBusy(true);
     try {
       await documentsApi.revert(documentId, version);
       await load();
+      toast.success(`Restored to version ${version}`);
+    } catch (err) {
+      toast.error(err.response?.data?.error?.message || 'Failed to restore');
     } finally {
       setBusy(false);
     }

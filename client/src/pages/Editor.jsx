@@ -9,9 +9,14 @@ import Spinner from '../components/Spinner';
 import PresenceBar from '../components/editor/PresenceBar';
 import HistoryPanel from '../components/editor/HistoryPanel';
 import ShareModal from '../components/editor/ShareModal';
+import RemoteCursors from '../components/editor/RemoteCursors';
 import { useAuth } from '../context/AuthContext';
 import documentsApi from '../services/documents.service';
 import { useCollaborativeDocument } from '../hooks/useCollaborativeDocument';
+
+// Shared text metrics — the textarea and the cursor overlay MUST match exactly
+// so they wrap identically.
+const SURFACE = 'p-8 font-mono text-[15px] leading-8';
 
 export default function Editor() {
   const { id } = useParams();
@@ -38,6 +43,16 @@ export default function Editor() {
       })
       .catch((err) => setError(err.response?.data?.error?.message || 'Failed to open document'));
   }, [id]);
+
+  // Auto-grow the textarea to fit its content, so it never scrolls internally —
+  // this keeps the inline cursor overlay aligned without scroll syncing.
+  useEffect(() => {
+    const ta = textareaRef.current;
+    if (ta) {
+      ta.style.height = 'auto';
+      ta.style.height = `${Math.max(ta.scrollHeight, window.innerHeight * 0.55)}px`;
+    }
+  }, [text, ready]);
 
   const isOwner = doc && String(doc.owner?._id || doc.owner) === String(user?._id || user?.id);
 
@@ -79,7 +94,7 @@ export default function Editor() {
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
         <Navbar />
         <main className="mx-auto max-w-3xl px-4 py-12">
-          <Link to="/" className="text-sm text-brand-600 hover:underline">← Back to documents</Link>
+          <Link to="/dashboard" className="text-sm text-brand-600 hover:underline">← Back to documents</Link>
           <div className="card mt-6 p-8 text-center">
             <div className="mb-3 text-4xl">😕</div>
             <p className="font-medium text-red-600">{error}</p>
@@ -99,7 +114,7 @@ export default function Editor() {
           {/* Toolbar */}
           <div className="flex flex-wrap items-center gap-2 border-b border-slate-200/80 bg-white/80 px-4 py-2.5 backdrop-blur dark:border-slate-800/80 dark:bg-slate-900/80">
             <Link
-              to="/"
+              to="/dashboard"
               className="grid h-9 w-9 place-items-center rounded-xl text-slate-500 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
               title="Back to documents"
             >
@@ -140,7 +155,7 @@ export default function Editor() {
               <Spinner label="Joining document…" />
             ) : (
               <div className="mx-auto max-w-3xl animate-fade-in">
-                <div className="card overflow-hidden">
+                <div className="card relative overflow-hidden">
                   <textarea
                     ref={textareaRef}
                     value={text}
@@ -150,8 +165,10 @@ export default function Editor() {
                     onKeyDown={onKeyDown}
                     spellCheck={false}
                     placeholder="Start typing… your edits sync in real time."
-                    className="block h-full min-h-[62vh] w-full resize-none bg-transparent p-8 sm:p-12 font-mono text-[15px] leading-8 text-slate-800 outline-none placeholder:text-slate-400 dark:text-slate-100"
+                    className={`relative block w-full resize-none overflow-hidden bg-transparent text-slate-800 outline-none placeholder:text-slate-400 dark:text-slate-100 ${SURFACE}`}
                   />
+                  {/* Other people's carets, drawn inline over the text. */}
+                  <RemoteCursors text={text} cursors={cursors} surfaceClass={SURFACE} />
                 </div>
               </div>
             )}

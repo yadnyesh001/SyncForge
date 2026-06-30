@@ -4,8 +4,10 @@
 
 import { useState } from 'react';
 import documentsApi from '../../services/documents.service';
+import { useToast } from '../../context/ToastContext';
 
 export default function ShareModal({ doc, isOwner, onClose, onUpdated }) {
+  const toast = useToast();
   const [emails, setEmails] = useState((doc.collaborators || []).map((c) => c.email).join(', '));
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -17,6 +19,7 @@ export default function ShareModal({ doc, isOwner, onClose, onUpdated }) {
     try {
       await navigator.clipboard.writeText(inviteLink);
       setCopied(true);
+      toast.success('Invite link copied to clipboard');
       setTimeout(() => setCopied(false), 1500);
     } catch {
       setError('Could not copy — copy it manually.');
@@ -30,6 +33,7 @@ export default function ShareModal({ doc, isOwner, onClose, onUpdated }) {
       const list = emails.split(',').map((e) => e.trim()).filter(Boolean);
       const updated = await documentsApi.update(doc._id, { collaborators: list });
       onUpdated(updated);
+      toast.success('Sharing updated');
       onClose();
     } catch (err) {
       setError(err.response?.data?.error?.message || 'Failed to update collaborators');
